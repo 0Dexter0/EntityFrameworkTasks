@@ -8,8 +8,6 @@ public class Task
 
     public string Description { get; set; }
 
-    public DateTime DueDate { get; set; }
-
     public int ProjectId { get; set; }
 
     public virtual Project Project { get; set; }
@@ -21,12 +19,6 @@ public class Task
     public int? AssigneeId { get; set; }
 
     public virtual User? Assignee { get; set; }
-
-    public int? ParentTaskId { get; set; }
-
-    public virtual Task? ParentTask { get; set; }
-
-    public virtual ICollection<Task> SubTasks { get; set; } = new List<Task>();
 
     public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
 

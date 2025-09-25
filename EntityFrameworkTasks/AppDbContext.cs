@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EntityFrameworkTasks.Models;
-using Microsoft.EntityFrameworkCore.Design;
 using Task = EntityFrameworkTasks.Models.Task;
 
 namespace EntityFrameworkTasks;
@@ -19,14 +18,10 @@ public class AppDbContext : DbContext
 
     public DbSet<Team> Teams { get; set; }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-    {
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(DbConst.ConnectionString);
+        optionsBuilder.UseNpgsql(DbConst.ConnectionString)
+            .UseSeeding(Seeder.Seed);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,20 +41,9 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Task>()
-            .HasMany(t => t.SubTasks)
-            .WithOne(t => t.ParentTask)
-            .HasForeignKey(t => t.ParentTaskId)
+            .HasMany(t => t.Comments)
+            .WithOne(t => t.Task)
+            .HasForeignKey(t => t.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
-{
-    public AppDbContext CreateDbContext(string[] args)
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseNpgsql(DbConst.ConnectionString);
-
-        return new(optionsBuilder.Options);
     }
 }

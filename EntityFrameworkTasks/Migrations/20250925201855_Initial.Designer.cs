@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFrameworkTasks.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250925183654_Initial")]
+    [Migration("20250925201855_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -106,12 +106,6 @@ namespace EntityFrameworkTasks.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("ParentTaskId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
@@ -123,8 +117,6 @@ namespace EntityFrameworkTasks.Migrations
                     b.HasIndex("AssigneeId");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("ParentTaskId");
 
                     b.HasIndex("ProjectId");
 
@@ -142,7 +134,12 @@ namespace EntityFrameworkTasks.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Teams");
                 });
@@ -243,11 +240,6 @@ namespace EntityFrameworkTasks.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkTasks.Models.Task", "ParentTask")
-                        .WithMany("SubTasks")
-                        .HasForeignKey("ParentTaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("EntityFrameworkTasks.Models.Project", "Project")
                         .WithMany("Tasks")
                         .HasForeignKey("ProjectId")
@@ -258,7 +250,16 @@ namespace EntityFrameworkTasks.Migrations
 
                     b.Navigation("Creator");
 
-                    b.Navigation("ParentTask");
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("EntityFrameworkTasks.Models.Team", b =>
+                {
+                    b.HasOne("EntityFrameworkTasks.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
                 });
@@ -316,8 +317,6 @@ namespace EntityFrameworkTasks.Migrations
             modelBuilder.Entity("EntityFrameworkTasks.Models.Task", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("SubTasks");
                 });
 
             modelBuilder.Entity("EntityFrameworkTasks.Models.User", b =>

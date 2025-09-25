@@ -1,3 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using EntityFrameworkTasks;
 
-Console.WriteLine("Hello, World!");
+await using (AppDbContext dbContext = new())
+{
+}
